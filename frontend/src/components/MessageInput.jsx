@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { Image, Send, X, Wand2 } from "lucide-react";
 import toast from "react-hot-toast";
+import axios from "../lib/axios.js";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
@@ -28,6 +29,29 @@ const MessageInput = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleGenerateImage = async () => {
+    if (!imagePrompt.trim()) {
+      toast.error("Please enter a prompt for image generation");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const response = await axios.post("/images/generate", { prompt: imagePrompt });
+      const generatedImageUrl = response.data.imageUrl;
+
+      // Set the generated image as preview
+      setImagePreview(generatedImageUrl);
+      setImagePrompt("");
+      toast.success("Image generated successfully!");
+    } catch (error) {
+      console.error("Failed to generate image:", error);
+      toast.error("Failed to generate image");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
@@ -49,6 +73,25 @@ const MessageInput = () => {
 
   return (
     <div className="p-4 w-full">
+      {/* Image Generation Section */}
+      <div className="mb-3 flex gap-2">
+        <input
+          type="text"
+          className="flex-1 input input-bordered rounded-lg input-sm sm:input-md"
+          placeholder="Describe an image to generate..."
+          value={imagePrompt}
+          onChange={(e) => setImagePrompt(e.target.value)}
+        />
+        <button
+          type="button"
+          className="btn btn-sm btn-circle"
+          onClick={handleGenerateImage}
+          disabled={isGenerating || !imagePrompt.trim()}
+        >
+          <Wand2 size={20} />
+        </button>
+      </div>
+
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
