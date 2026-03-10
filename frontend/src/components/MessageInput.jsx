@@ -2,11 +2,13 @@ import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, X, Wand2 } from "lucide-react";
 import toast from "react-hot-toast";
-import axios from "../lib/axios.js";
+import { axiosInstance } from "../lib/axios.js";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
 
@@ -37,7 +39,7 @@ const MessageInput = () => {
 
     setIsGenerating(true);
     try {
-      const response = await axios.post("/images/generate", { prompt: imagePrompt });
+      const response = await axiosInstance.post("/images/generate", { prompt: imagePrompt });
       const generatedImageUrl = response.data.imageUrl;
 
       // Set the generated image as preview
