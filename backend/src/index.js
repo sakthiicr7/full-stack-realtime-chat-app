@@ -16,6 +16,20 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
+const requiredEnvVars = [
+  "MONGODB_URI",
+  "JWT_SECRET",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+];
+
+requiredEnvVars.forEach((v) => {
+  if (!process.env[v]) {
+    console.error(`⚠️  FATAL ERROR: Environment variable ${v} is missing!`);
+  }
+});
+
 const PORT = process.env.PORT || 5001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

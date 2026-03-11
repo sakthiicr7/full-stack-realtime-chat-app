@@ -43,6 +43,6 @@ export const generateImage = async (req, res) => {
         res.status(200).json({ imageUrl: uploadResponse.secure_url });
     } catch (error) {
         console.error("Error in generateImage controller:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: error.message || "Failed to generate image" });
     }
 };
